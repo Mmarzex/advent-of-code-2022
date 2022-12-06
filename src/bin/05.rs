@@ -1,17 +1,32 @@
-pub fn part_one(input: &str) -> Option<String> {
-    let (_stacks, instructions) = input.split_once("\n\n").unwrap();
+use itertools::Itertools;
 
-    let mut stacks = vec![
-        vec!['F', 'C', 'J', 'P', 'H', 'T', 'W'],
-        vec!['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'],
-        vec!['H', 'P', 'T', 'R'],
-        vec!['Z', 'S', 'N', 'P', 'H', 'T'],
-        vec!['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'],
-        vec!['P', 'M', 'G', 'F', 'W', 'D', 'Z'],
-        vec!['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'],
-        vec!['N', 'D', 'S'],
-        vec!['D', 'Z', 'S', 'F', 'M']
-    ];
+pub fn part_one(input: &str) -> Option<String> {
+    let (stacks, instructions) = input.split_once("\n\n").unwrap();
+
+    let lines = stacks.lines().collect::<Vec<&str>>();
+
+    let (stack_indexes_lines, stack_lines) = lines.split_last().unwrap();
+
+    let mut crate_stacks: Vec<Vec<char>> = vec![];
+
+    let stack_indexes = stack_indexes_lines.split("   ").count();
+
+    for _ in 0..stack_indexes {
+        crate_stacks.push(vec![]);
+    }
+
+    for line in stack_lines.iter() {
+        for (idx, mut chunk) in line.chars().chunks(4).into_iter().enumerate() {
+            let y = chunk.join("");
+
+
+            let yt = y.trim();
+
+            if !yt.is_empty() {
+                crate_stacks[idx].insert(0, yt.chars().nth(1).unwrap());
+            }
+        }
+    }
 
     for instruction in instructions.lines() {
         let x = instruction.split(' ').collect::<Vec<&str>>();
@@ -19,38 +34,47 @@ pub fn part_one(input: &str) -> Option<String> {
         let from = x[3].parse::<usize>().unwrap() - 1;
         let to = x[5].parse::<usize>().unwrap() - 1;
 
-        let t = (0..n).map(|_| stacks[from].pop().unwrap()).collect::<Vec<char>>();
+        let t = (0..n)
+            .map(|_| crate_stacks[from].pop().unwrap())
+            .collect::<Vec<char>>();
 
         for elem in t.iter() {
-            stacks[to].push(*elem);
+            crate_stacks[to].push(*elem);
         }
     }
 
-    let phrase: String = stacks.iter().map(|s| s.last().unwrap()).collect();
+    let phrase: String = crate_stacks.iter().map(|s| s.last().unwrap()).collect();
 
     Option::Some(phrase)
 }
 
 pub fn part_two(input: &str) -> Option<String> {
-    let (_stacks, instructions) = input.split_once("\n\n").unwrap();
+    let (stacks, instructions) = input.split_once("\n\n").unwrap();
 
-    // let mut stacks = vec![
-    //     vec!['Z', 'N'],
-    //     vec!['M', 'C', 'D'],
-    //     vec!['P']
-    // ];
+    let lines = stacks.lines().collect::<Vec<&str>>();
 
-    let mut stacks = vec![
-        vec!['F', 'C', 'J', 'P', 'H', 'T', 'W'],
-        vec!['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'],
-        vec!['H', 'P', 'T', 'R'],
-        vec!['Z', 'S', 'N', 'P', 'H', 'T'],
-        vec!['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'],
-        vec!['P', 'M', 'G', 'F', 'W', 'D', 'Z'],
-        vec!['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'],
-        vec!['N', 'D', 'S'],
-        vec!['D', 'Z', 'S', 'F', 'M']
-    ];
+    let (stack_indexes_lines, stack_lines) = lines.split_last().unwrap();
+
+    let mut crate_stacks: Vec<Vec<char>> = vec![];
+
+    let stack_indexes = stack_indexes_lines.split("   ").count();
+
+    for _ in 0..stack_indexes {
+        crate_stacks.push(vec![]);
+    }
+
+    for line in stack_lines.iter() {
+        for (idx, mut chunk) in line.chars().chunks(4).into_iter().enumerate() {
+            let y = chunk.join("");
+
+
+            let yt = y.trim();
+
+            if !yt.is_empty() {
+                crate_stacks[idx].insert(0, yt.chars().nth(1).unwrap());
+            }
+        }
+    }
 
     for instruction in instructions.lines() {
         let x = instruction.split(' ').collect::<Vec<&str>>();
@@ -58,14 +82,16 @@ pub fn part_two(input: &str) -> Option<String> {
         let from = x[3].parse::<usize>().unwrap() - 1;
         let to = x[5].parse::<usize>().unwrap() - 1;
 
-        let t = (0..n).map(|_| stacks[from].pop().unwrap()).collect::<Vec<char>>();
+        let t = (0..n)
+            .map(|_| crate_stacks[from].pop().unwrap())
+            .collect::<Vec<char>>();
 
         for elem in t.iter().rev() {
-            stacks[to].push(*elem);
+            crate_stacks[to].push(*elem);
         }
     }
 
-    let phrase: String = stacks.iter().map(|s| s.last().unwrap()).collect();
+    let phrase: String = crate_stacks.iter().map(|s| s.last().unwrap()).collect();
 
     Option::Some(phrase)
 }
@@ -83,10 +109,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 5);
+        assert_eq!(part_one(&input), Option::Some("CMZ".to_string()));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 5);
+        assert_eq!(part_two(&input), Option::Some("MCD".to_string()));
     }
 }
