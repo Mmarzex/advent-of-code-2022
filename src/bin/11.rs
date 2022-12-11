@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+
+
 #[derive(Clone, Debug)]
 struct Monkey<'a> {
     checks: usize,
@@ -11,6 +13,50 @@ struct Monkey<'a> {
 }
 
 impl Monkey<'_> {
+    fn new(input: &str) -> Monkey {
+        let lines = input.trim_end().lines().collect::<Vec<&str>>();
+
+        let items = lines[1]
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .split(", ")
+            .map(|i| i.parse::<usize>().unwrap())
+            .collect::<VecDeque<usize>>();
+
+        let operation = lines[2].split(" = ").nth(1).unwrap();
+
+        let test = lines[3]
+            .split("by ")
+            .nth(1)
+            .unwrap()
+            .parse::<usize>()
+            .unwrap();
+
+        let test_true = lines[4]
+            .split("monkey ")
+            .nth(1)
+            .unwrap()
+            .parse::<usize>()
+            .unwrap();
+
+        let test_false = lines[5]
+            .split("monkey ")
+            .nth(1)
+            .unwrap()
+            .parse::<usize>()
+            .unwrap();
+
+        Monkey {
+            checks: 0,
+            items: items,
+            operation: operation,
+            test: test,
+            test_true: test_true,
+            test_false: test_false,
+        }
+    }
+
     fn process(&mut self) -> Option<(usize, usize)> {
         if let Some(item) = self.items.pop_front() {
             self.checks += 1;
@@ -83,49 +129,7 @@ pub fn part_one(input: &str) -> Option<usize> {
     let mut monkeys = input
         .trim_end()
         .split("\n\n")
-        .map(|m| {
-            let lines = m.trim_end().lines().collect::<Vec<&str>>();
-
-            let items = lines[1]
-                .split(": ")
-                .nth(1)
-                .unwrap()
-                .split(", ")
-                .map(|i| i.parse::<usize>().unwrap())
-                .collect::<VecDeque<usize>>();
-
-            let operation = lines[2].split(" = ").nth(1).unwrap();
-
-            let test = lines[3]
-                .split("by ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            let test_true = lines[4]
-                .split("monkey ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            let test_false = lines[5]
-                .split("monkey ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            Monkey {
-                checks: 0,
-                items: items,
-                operation: operation,
-                test: test,
-                test_true: test_true,
-                test_false: test_false,
-            }
-        })
+        .map(|m| Monkey::new(m))
         .collect::<Vec<Monkey>>();
 
     for _ in 0..20 {
@@ -148,49 +152,7 @@ pub fn part_two(input: &str) -> Option<usize> {
     let mut monkeys = input
         .trim_end()
         .split("\n\n")
-        .map(|m| {
-            let lines = m.trim_end().lines().collect::<Vec<&str>>();
-
-            let items = lines[1]
-                .split(": ")
-                .nth(1)
-                .unwrap()
-                .split(", ")
-                .map(|i| i.parse::<usize>().unwrap())
-                .collect::<VecDeque<usize>>();
-
-            let operation = lines[2].split(" = ").nth(1).unwrap();
-
-            let test = lines[3]
-                .split("by ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            let test_true = lines[4]
-                .split("monkey ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            let test_false = lines[5]
-                .split("monkey ")
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-
-            Monkey {
-                checks: 0,
-                items: items,
-                operation: operation,
-                test: test,
-                test_true: test_true,
-                test_false: test_false,
-            }
-        })
+        .map(|m| Monkey::new(m))
         .collect::<Vec<Monkey>>();
 
     let m: usize = monkeys.iter().map(|m| m.test).product();
